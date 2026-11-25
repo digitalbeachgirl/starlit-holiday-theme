@@ -1,0 +1,6 @@
+{
+  "name": "starlit-holiday",
+  "version": "0.1.0",
+  "description": "Starlit holiday night: glowing stars, falling snow, softly lit snowy pines. Snow piles up as the context window fills, with a snowfall meter.",
+  "types": "./types/index.d.ts"
+}

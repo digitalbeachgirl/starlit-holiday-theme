@@ -1,0 +1,5 @@
+{
+  "name": "starlit-holiday-theme",
+  "owner": { "name": "Sondra Verva" },
+  "plugins": [{ "name": "starlit-holiday", "source": "./" }]
+}
