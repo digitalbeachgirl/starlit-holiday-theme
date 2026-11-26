@@ -4,6 +4,8 @@ A cozy holiday look for the Claude desktop app (Code tab): a night sky with twin
 
 The fun part: the snow on the ground gets deeper as your chat fills up, and a snowfall meter above the message box shows how full the chat is (blue, then yellow at 60%, then red at 80%). Deep snow means it is time to start a fresh chat.
 
+A frosted ice-glass card in the top left shows two rings: how full the chat is (with the token count, like "177K / 1M tokens") and how much of your 5-hour usage window is used, with the time until it resets. The 5-hour ring shows on a Claude subscription only. The numbers update each time Claude finishes a reply.
+
 Made by Sondra Verva for the AI Builders Beehive.
 
 ## Install
