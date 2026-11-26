@@ -61,34 +61,36 @@ const drift = (percent: number) => {
 const k = (n: number) => (n >= 1_000_000 ? `${+(n / 1_000_000).toFixed(1)}M` : `${Math.round(n / 1000)}K`)
 const tone = (p: number) => (p >= 80 ? '#ff7a70' : p >= 60 ? '#f0c86a' : '#9fdcff')
 
-// One thin watch-face ring: a faint track and an arc that fills clockwise from the top.
-const ring = (cx: number, p: number, icon: string, label: string, sub: string) => {
-  const r = 30
-  const c = 2 * Math.PI * r
-  const on = (Math.min(p, 100) / 100) * c
-  return `<circle cx="${cx}" cy="128" r="${r}" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="5"/>`
-    + `<circle cx="${cx}" cy="128" r="${r}" fill="none" stroke="${tone(p)}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${on} ${c}" transform="rotate(-90 ${cx} 128)" filter="url(#gl)"/>`
-    + `<text x="${cx}" y="134" text-anchor="middle" font-size="17" font-weight="600" fill="#f4f8ff">${Math.round(p)}%</text>`
-    + `<text x="${cx}" y="182" text-anchor="middle" font-size="12" fill="#cfe2f7">${icon} ${label}</text>`
-    + `<text x="${cx}" y="199" text-anchor="middle" font-size="10.5" fill="#93a8c6">${sub}</text>`
+// Card sits in the narrow gap between the left sidebar and the chat: x 325 to 455.
+const L = 337
+const R = 443
+
+// One stacked row: label and % on top, a thin glowing bar, a small note under it.
+const row = (y: number, p: number, label: string, sub: string) => {
+  const on = Math.max(3, (Math.min(p, 100) / 100) * (R - L))
+  return `<text x="${L}" y="${y}" font-size="11" fill="#cfe2f7">${label}</text>`
+    + `<text x="${R}" y="${y}" text-anchor="end" font-size="13" font-weight="600" fill="#f4f8ff">${Math.round(p)}%</text>`
+    + `<rect x="${L}" y="${y + 7}" width="${R - L}" height="5" rx="2.5" fill="#ffffff" opacity=".13"/>`
+    + `<rect x="${L}" y="${y + 7}" width="${on}" height="5" rx="2.5" fill="${tone(p)}" filter="url(#gl)"/>`
+    + `<text x="${L}" y="${y + 26}" font-size="9.5" fill="#93a8c6">${sub}</text>`
 }
 
 // Frosted ice-glass card, top left, with a few flakes drifting across it.
 const card = (g: StarlitGauge) => {
   const five = g.fiveHour === null
-    ? ring(490, 0, '⏳', '5 hrs', 'API plan: no limit')
-    : ring(490, g.fiveHour, '⏳', '5-hour window', g.resetsIn ? `resets in ${g.resetsIn}` : '')
+    ? row(158, 0, '⏳ 5 hrs', 'API plan: no limit')
+    : row(158, g.fiveHour, '⏳ 5 hrs', g.resetsIn ? `resets in ${g.resetsIn}` : '')
   // ponytail: shifted down so wide windows (which crop the scene top) still show it
   return `<g font-family="Segoe UI, system-ui, sans-serif" transform="translate(0 130)">`
     + `<defs><linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dff0ff" stop-opacity=".16"/><stop offset="1" stop-color="#9fc4ea" stop-opacity=".06"/></linearGradient>`
-    + `<filter id="gl"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`
-    + `<rect x="325" y="62" width="230" height="160" rx="18" fill="url(#ice)" stroke="#e6f2ff" stroke-opacity=".38" stroke-width="1"/>`
-    + `<rect x="326" y="63" width="228" height="1.2" rx=".6" fill="#ffffff" opacity=".5"/>`
-    + `<text x="440" y="88" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#bcd3ee">WINTER GAUGE</text>`
-    + ring(390, g.percent, '❄', 'Chat', `${k(g.tokens)} / ${k(g.window)} tokens`)
+    + `<filter id="gl"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`
+    + `<rect x="325" y="62" width="130" height="144" rx="14" fill="url(#ice)" stroke="#e6f2ff" stroke-opacity=".38" stroke-width="1"/>`
+    + `<rect x="326" y="63" width="128" height="1.2" rx=".6" fill="#ffffff" opacity=".5"/>`
+    + `<text x="390" y="82" text-anchor="middle" font-size="9" letter-spacing="2" fill="#bcd3ee">WINTER GAUGE</text>`
+    + row(106, g.percent, '❄ Chat', `${k(g.tokens)} / ${k(g.window)} tokens`)
     + five
-    + [[345, 0], [445, 2.5], [535, 5]].map(([x, d]) =>
-      `<circle cx="${x}" cy="70" r="1.6" fill="#fff" opacity=".8"><animate attributeName="cy" values="66;218" dur="9s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.85;0" dur="9s" begin="${d}s" repeatCount="indefinite"/></circle>`).join('')
+    + [[345, 0], [395, 3], [440, 6]].map(([x, d]) =>
+      `<circle cx="${x}" cy="70" r="1.4" fill="#fff" opacity=".8"><animate attributeName="cy" values="66;202" dur="9s" begin="${d}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.85;0" dur="9s" begin="${d}s" repeatCount="indefinite"/></circle>`).join('')
     + `</g>`
 }
 
@@ -144,7 +146,8 @@ export const register: Register = on => {
     const percent = (await read($, fill)) ?? 0
     const g = await read($, gauge)
 
-    return <Svg source={SCENE + drift(percent) + FRONT + (g ? card(g) : '') + '</svg>'} alt="Starry winter night with snowy pine trees and a frosted gauge card" isInteractive />
+    // ponytail: the card is part of the picture, so a closed sidebar lets the chat cover it
+    return <Svg source={SCENE + drift(percent) + FRONT + (g ? card(g) : '') + '</svg>'} alt="Starry winter night with a cabin, pines, a snowman and a frosted gauge card" isInteractive />
   })
 
 }
