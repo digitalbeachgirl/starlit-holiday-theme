@@ -102,7 +102,7 @@ const refresh = async ($: EngineInterface) => {
     window: context.window,
     percent,
     fiveHour: five ? five.percentUsed : null,
-    resetsIn: five ? until(five.resetsAt, $.clock.now()) : null,
+    resetsIn: five ? until(five.resetsAt, await $.clock.now()) : null,
   }
   await update($, fill, () => percent)
   await update($, gauge, () => g)
