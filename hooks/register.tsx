@@ -80,8 +80,9 @@ const card = (g: StarlitGauge) => {
   const five = g.fiveHour === null
     ? row(158, 0, '⏳ 5 hrs', 'API plan: no limit')
     : row(158, g.fiveHour, '⏳ 5 hrs', g.resetsIn ? `resets in ${g.resetsIn}` : '')
-  // ponytail: shifted down so wide windows (which crop the scene top) still show it
-  return `<g font-family="Segoe UI, system-ui, sans-serif" transform="translate(0 130)">`
+  // ponytail: shifted down so wide windows (which crop the scene top) still show it,
+  // and left so it sits just right of an open sidebar, clear of the chat column
+  return `<g font-family="Segoe UI, system-ui, sans-serif" transform="translate(-78 130)">`
     + `<defs><linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dff0ff" stop-opacity=".16"/><stop offset="1" stop-color="#9fc4ea" stop-opacity=".06"/></linearGradient>`
     + `<filter id="gl"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`
     + `<rect x="325" y="62" width="130" height="144" rx="14" fill="url(#ice)" stroke="#e6f2ff" stroke-opacity=".38" stroke-width="1"/>`
