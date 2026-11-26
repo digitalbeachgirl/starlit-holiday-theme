@@ -61,7 +61,8 @@ const card = (g: StarlitGauge) => {
   const five = g.fiveHour === null
     ? ring(493, 0, '⏳', '5 hrs', 'API plan: no limit shown')
     : ring(493, g.fiveHour, '⏳', '5-hour window', g.resetsIn ? `resets in ${g.resetsIn}` : '')
-  return `<g font-family="Segoe UI, system-ui, sans-serif">`
+  // ponytail: shifted down so wide windows (which crop the scene top) still show it
+  return `<g font-family="Segoe UI, system-ui, sans-serif" transform="translate(0 130)">`
     + `<defs><linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dff0ff" stop-opacity=".16"/><stop offset="1" stop-color="#9fc4ea" stop-opacity=".06"/></linearGradient>`
     + `<filter id="gl"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`
     + `<rect x="300" y="62" width="280" height="186" rx="18" fill="url(#ice)" stroke="#e6f2ff" stroke-opacity=".38" stroke-width="1"/>`
@@ -83,7 +84,11 @@ const meter = (percent: number) => {
 // ponytail: countdown is worked out at each turn end, so it can lag between turns
 const until = (iso: string | undefined, now: number) => {
   if (!iso) return null
-  const mins = Math.max(0, Math.round((Date.parse(iso) - now) / 60000))
+  // Accept an ISO date or plain epoch seconds/ms; anything else shows no countdown.
+  const n = Number(iso)
+  const at = Number.isNaN(n) ? Date.parse(iso) : n < 1e12 ? n * 1000 : n
+  if (Number.isNaN(at)) return null
+  const mins = Math.max(0, Math.round((at - now) / 60000))
   return mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`
 }
 
