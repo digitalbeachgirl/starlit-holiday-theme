@@ -33,9 +33,10 @@ const LOOK: ThemeSetArgs = {
   backdrop: { scene: 'starlit-holiday', glass: { blur: 14, tint: '#0b1324', opacity: 0.62 } },
 }
 
-// The drift rises from the ground line: 0% = a thin dusting, 100% = deep snow.
+// The drift rises fast: handoff time (~15-20% of a 1M window) already looks deep.
+// ponytail: tops out at 35% (about half the screen) so the chat stays readable
 const drift = (percent: number) => {
-  const top = 900 - (12 + percent * 2.6)
+  const top = 900 - (12 + Math.min(percent, 35) * 13)
   const mid = top - 14
   return `<path d="M0 ${top} C300 ${mid} 520 ${top + 10} 800 ${top - 4} S1300 ${mid} 1600 ${top} V900 H0Z" fill="#eaf1fc" opacity=".95"/>`
     + `<path d="M0 ${top + 6} C400 ${top - 4} 900 ${top + 14} 1600 ${top + 4}" stroke="#ffffff" stroke-width="2" fill="none" opacity=".7"/>`
